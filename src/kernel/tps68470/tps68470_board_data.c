@@ -369,6 +369,88 @@ static const struct tps68470_regulator_platform_data intel_nvl_tps68470_pdata = 
 	},
 };
 
+/* Settings for Panasonic CF-33-1 Rugged Tablet */
+
+static struct regulator_consumer_supply int3477_core_consumer_supplies[] = {
+	REGULATOR_SUPPLY("dvdd", "i2c-INT3477:00"),
+};
+
+static struct regulator_consumer_supply int3477_ana_consumer_supplies[] = {
+	REGULATOR_SUPPLY("avdd", "i2c-INT3477:00"),
+};
+
+static struct regulator_consumer_supply int3477_vcm_consumer_supplies[] = {
+	REGULATOR_SUPPLY("vcc", "i2c-INT3477:00-VCM"),
+};
+
+static struct regulator_consumer_supply int3477_vsio_consumer_supplies[] = {
+	REGULATOR_SUPPLY("dovdd", "i2c-INT3477:00"),
+};
+
+static const struct regulator_init_data panasonic_cf33_1_tps68470_core_reg_init_data = {
+	.constraints = {
+		.min_uV = 1200000,
+		.max_uV = 1200000,
+		.apply_uV = true,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(int3477_core_consumer_supplies),
+	.consumer_supplies = int3477_core_consumer_supplies,
+};
+
+static const struct regulator_init_data panasonic_cf33_1_tps68470_ana_reg_init_data = {
+	.constraints = {
+		.min_uV = 2815200,
+		.max_uV = 2815200,
+		.apply_uV = true,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(int3477_ana_consumer_supplies),
+	.consumer_supplies = int3477_ana_consumer_supplies,
+};
+
+static const struct regulator_init_data panasonic_cf33_1_tps68470_vcm_reg_init_data = {
+	.constraints = {
+		.min_uV = 2815200,
+		.max_uV = 2815200,
+		.apply_uV = true,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(int3477_vcm_consumer_supplies),
+	.consumer_supplies = int3477_vcm_consumer_supplies,
+
+};
+
+static const struct regulator_init_data panasonic_cf33_1_tps68470_vio_reg_init_data = {
+	.constraints = {
+		.min_uV = 1800600,
+		.max_uV = 1800600,
+		.apply_uV = true,
+		.always_on = true,
+	},
+};
+
+static const struct regulator_init_data panasonic_cf33_1_tps68470_vsio_reg_init_data = {
+	.constraints = {
+		.min_uV = 1800600,
+		.max_uV = 1800600,
+		.apply_uV = true,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(int3477_vsio_consumer_supplies),
+	.consumer_supplies = int3477_vsio_consumer_supplies,	
+};
+
+static const struct tps68470_regulator_platform_data panasonic_cf33_1_pdata = {
+	.reg_init_data = {
+		[TPS68470_CORE] = &panasonic_cf33_1_tps68470_core_reg_init_data,
+		[TPS68470_ANA] = &panasonic_cf33_1_tps68470_ana_reg_init_data,
+		[TPS68470_VCM] = &panasonic_cf33_1_tps68470_vcm_reg_init_data,
+		[TPS68470_VIO] = &panasonic_cf33_1_tps68470_vio_reg_init_data,
+		[TPS68470_VSIO] = &panasonic_cf33_1_tps68470_vsio_reg_init_data,
+	},
+};
+
 static struct gpiod_lookup_table surface_go_int347a_gpios = {
 	.dev_id = "i2c-INT347A:00",
 	.table = {
@@ -408,6 +490,15 @@ static struct gpiod_lookup_table intel_nvl_tps68470_gpios = {
 	.table = {
 		GPIO_LOOKUP("tps68470-gpio", 9, "reset", GPIO_ACTIVE_LOW),
 		{ }
+	}
+};
+
+static struct gpiod_lookup_table panasonic_cf33_1_int3477_gpios = {
+	.dev_id = "i2c-INT3477:00",
+	.table = {
+		GPIO_LOOKUP("tps68470-gpio", 9, "reset", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("tps68470-gpio", 7, "powerdown", GPIO_ACTIVE_LOW),
+		{}
 	}
 };
 
@@ -466,6 +557,15 @@ static const struct int3472_tps68470_board_data intel_nvl_tps68470_board_data = 
 	.n_gpiod_lookups = 1,
 	.tps68470_gpio_lookup_tables = {
 		&intel_nvl_tps68470_gpios,
+	},
+};
+
+static const struct int3472_tps68470_board_data panasonic_cf33_1_tps68470_board_data = {
+	.dev_name = "i2c-INT3472:05",
+	.tps68470_regulator_pdata = &panasonic_cf33_1_pdata,
+	.n_gpiod_lookups = 1,
+	.tps68470_gpio_lookup_tables ={
+		&panasonic_cf33_1_int3477_gpios,
 	},
 };
 
@@ -528,6 +628,14 @@ static const struct dmi_system_id int3472_tps68470_board_data_table[] = {
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Nova Lake Client Platform"),
 		},
 		.driver_data = (void *)&intel_nvl_tps68470_board_data,
+	},
+	{
+		.matches = {
+			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Panasonic Corporation"),
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME,"CF-33-1"),
+		},
+		.driver_data = (void *)&panasonic_cf33_1_tps68470_board_data,
+
 	},
 	{ }
 };
