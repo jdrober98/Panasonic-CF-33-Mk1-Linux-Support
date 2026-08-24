@@ -17,7 +17,7 @@
 #define DESIGNED_FOR_CHROMEOS		1
 #define DESIGNED_FOR_WINDOWS		2
 
-#define TPS68470_WIN_MFD_CELL_COUNT	3
+#define TPS68470_WIN_MFD_CELL_COUNT	4
 
 static const struct mfd_cell tps68470_cros[] = {
 	{ .name = "tps68470-gpio" },
